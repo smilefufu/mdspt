@@ -169,7 +169,6 @@ def make_app():
         "gzip" : True,
         "compress_response": True,
         "debug": True,
-        "xheaders": True,
         }
     return tornado.web.Application([
         (r"/config", ConfigHandler),
@@ -209,7 +208,7 @@ if __name__ == "__main__":
     parse_command_line(final=False)
     config_tornado_log(options)
     app = make_app()
-    server = tornado.httpserver.HTTPServer(app)
+    server = tornado.httpserver.HTTPServer(app, xheaders=True)
     server.bind(options.port)
     server.start(1)     # fork only one process
     logging.info('Server start with port: %s' % options.port)
