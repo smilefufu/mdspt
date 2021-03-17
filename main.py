@@ -74,10 +74,12 @@ class ConfigHandler(tornado.web.RequestHandler):
 
     def post(self):
         data = self.get_argument('data')
+        logging.info(data)
         config = get_config()
         try:
             j = json.loads(data)
         except:
+            logging.info(traceback.format_exc())
             return self.render(
                 'config.html',
                 show=json.dumps(config, sort_keys=True, indent=2, ensure_ascii=False),
@@ -141,7 +143,7 @@ class ReHandler(tornado.web.RequestHandler):
         valid_targets = []
         total_weight = 0
         for t in targets:
-            if not t.get('time', None) or hour >= t['time'][0] or hour <= t['time'][1]:
+            if not t.get('time', None) or (hour >= t['time'][0] and hour <= t['time'][1]):
                 valid_targets.append(t)
                 total_weight += t['weight']
         tmp = 0
@@ -167,6 +169,7 @@ def make_app():
         "gzip" : True,
         "compress_response": True,
         "debug": True,
+        "xheaders": True,
         }
     return tornado.web.Application([
         (r"/config", ConfigHandler),
