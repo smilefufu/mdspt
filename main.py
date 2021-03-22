@@ -125,6 +125,18 @@ class ConfigHandler(tornado.web.RequestHandler):
                 show=json.dumps(config, sort_keys=True, indent=2, ensure_ascii=False),
                 result='配置修改成功！')
 
+class StaticHandler(tornado.web.RequestHandler):
+    def get(self):
+        date = self.get_argument('date')
+        data = "路径访问量：\n"
+        data_path = os.popen("grep redirect logs/the.log."+date+" | awk '{print $9}' | sort | uniq -c").read()
+        data += data_path
+        data += "\nurl跳转量：\n"
+        data_url = os.popen("grep redirect logs/the.log."+date+" | awk '{print $11}' | sort | uniq -c").read()
+        data += data_url
+        return self.render('static.html', data=data)
+        
+
 class ReHandler(tornado.web.RequestHandler):
     def get(self, code):
         _uuid = self.get_secure_cookie("uuid", None)
@@ -171,6 +183,7 @@ def make_app():
         "debug": True,
         }
     return tornado.web.Application([
+        (r"/static", StaticHandler),
         (r"/config", ConfigHandler),
         (r"/r/(.*)", ReHandler)
     ], **config)
