@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 tornado = "*"
+qqwry-py3 = "*"
 
 [dev-packages]
 
